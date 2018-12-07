@@ -39,6 +39,14 @@ def cleandata(dataset):
     return cleandset
 
 
+def createIdList(dataset):
+    """Create a list of all the ids for tracking."""
+    idlist = []
+    for item in dataset:
+        idlist.append(int(item[0]))
+    return idlist
+
+
 def createCoordinates(dataset):
     """Create a group of thruples to be used to populate canvas."""
     coords = []
@@ -63,6 +71,25 @@ def markCanvas(canvas, coords):
     return endcanvas
 
 
+def determineLoneId(idlist, canvas, coords):
+    """Remove overlap ids from full idlist."""
+    newcanvas = canvas
+    for item in coords:
+        if newcanvas[item[2]][item[1]] == '.':
+            newcanvas[item[2]][item[1]] = item[0]
+        elif newcanvas[item[2]][item[1]] != 'X':
+            if newcanvas[item[2]][item[1]] in idlist:
+                idlist.remove(newcanvas[item[2]][item[1]])
+            if item[0] in idlist:
+                idlist.remove(item[0])
+            newcanvas[item[2]][item[1]] = 'X'
+        else:
+            if item[0] in idlist:
+                idlist.remove(item[0])
+            continue
+    return idlist
+
+
 def countx(canvas):
     """Count the number of 'X' in canvas."""
     count = 0
@@ -81,11 +108,13 @@ canvas = createCanvas(1000)
 
 cleanset = cleandata(dataset)
 # print(cleanset)
-
+id_list = createIdList(cleanset)
 coords = createCoordinates(cleanset)
 # print(coords)
 
-marked_canvas = markCanvas(canvas, coords)
+# marked_canvas = markCanvas(canvas, coords)
+lone_id = determineLoneId(id_list, canvas, coords)
 # print(marked_canvas)
 
-print(countx(marked_canvas))
+# print(countx(marked_canvas))
+print(lone_id)
